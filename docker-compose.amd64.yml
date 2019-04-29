@@ -1,0 +1,12 @@
+version: "2"
+services:
+    iotedgec:
+      image: docker.moxa.online/moxaisd/iotedge:${VERSION}-${ARCH}
+      environment:
+        - IOT_DEVICE_CONNSTR=$IOT_DEVICE_CONNSTR
+      volumes:
+        - "//usr//bin//docker://usr//bin//docker"
+        - "//var//run//docker.sock://var//run//docker.sock"
+      ports:
+        - "15580:15580"
+        - "15581:15581"

@@ -1,0 +1,14 @@
+kind: app
+version: v1
+spec:
+  name: iotedge
+  displayname: Microsoft Azure Iot Edge App
+  description: >
+    Azure IoT Edge Device Management
+  version: "${VERSION}"
+  arch: ${ARCH}
+  category: device management
+  attributes:
+    - installed
+    - started
+    - openInSameTab

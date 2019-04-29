@@ -1,0 +1,30 @@
+FROM amd64/ubuntu:18.04 as iotedge-env
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https ca-certificates \
+    iproute2 curl gpg
+
+RUN curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > ./microsoft-prod.list && \
+    cp ./microsoft-prod.list /etc/apt/sources.list.d/ && \
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
+    cp ./microsoft.gpg /etc/apt/trusted.gpg.d/ 
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    moby-cli \
+    moby-engine
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    iotedge
+
+RUN apt-get purge curl gpg systemd moby-cli moby-engine -y && \
+    apt-get autoremove -y && apt-get clean && \
+    rm -rf /etc/apt/sources.list.d/* \
+    /var/lib/apt/lists/*
+
+COPY entrypoint.sh /usr/bin/entrypoint.sh 
+RUN sed -i 's/\r//' /usr/bin/entrypoint.sh && \
+    chmod u+x /usr/bin/entrypoint.sh 
+
+FROM scratch
+COPY --from=iotedge-env / /
+
+ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
